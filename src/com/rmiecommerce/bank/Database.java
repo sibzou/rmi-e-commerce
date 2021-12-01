@@ -28,4 +28,19 @@ public class Database {
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
+
+    public void debit(String accountNumber, String accountCryptogram,
+            float amountToDebit) throws SQLException {
+
+        PreparedStatement stmt = connection.prepareStatement(
+            "update account set balance = balance - ? where num = ? and " +
+            "cryptogram = ? and balance >= ?");
+
+        stmt.setFloat(1, amountToDebit);
+        stmt.setString(2, accountNumber);
+        stmt.setString(3, accountCryptogram);
+        stmt.setFloat(4, amountToDebit);
+
+        stmt.execute();
+    }
 }
