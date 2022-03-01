@@ -77,13 +77,10 @@ public class ShopScene {
         Label priceLabel = new Label(article.price + " €");
 
         Button addToCartButton = new Button("Ajouter au panier");
-        addToCartButton.setMaxWidth(Double.MAX_VALUE);
         addToCartButton.setOnMouseClicked(mouseEventHandler);
         addToCartButtons[index] = addToCartButton;
 
         Spinner purchaseQuantitySpinner = new Spinner(1, 100, 1);
-        purchaseQuantitySpinner.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(purchaseQuantitySpinner, Priority.ALWAYS);
 
         Button cartRemovalButton = new Button("Supprimer");
         cartRemovalButton.setOnMouseClicked(mouseEventHandler);
@@ -97,7 +94,6 @@ public class ShopScene {
         VBox articleBox = new VBox(nameLabel, priceLabel, addToCartButton);
 
         articleBox.setSpacing(16);
-        articleBox.setMaxWidth(400);
         goodsPane.getChildren().add(articleBox);
     }
 
