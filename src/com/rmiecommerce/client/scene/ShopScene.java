@@ -13,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -29,6 +30,7 @@ public class ShopScene {
     private final Button seeCartButton;
     private Button[] addToCartButtons;
     private HBox[] purchaseControlBoxes;
+    private Spinner[] purchaseQuantitySpinners;
     private Button[] cartRemovalButtons;
     private final EventHandler<MouseEvent> mouseEventHandler;
 
@@ -70,6 +72,11 @@ public class ShopScene {
         mainBox = new VBox(shopSelector, goodsScrollPane, bottomBar);
     }
 
+    @SuppressWarnings("unchecked")
+    private static void setSpinnerValue(Spinner spinner, int value) {
+        spinner.getValueFactory().setValue(value);
+    }
+
     private void addArticleInShop(Article article, int index) {
         Label nameLabel = new Label(article.name);
         nameLabel.setFont(new Font(16));
@@ -81,6 +88,7 @@ public class ShopScene {
         addToCartButtons[index] = addToCartButton;
 
         Spinner purchaseQuantitySpinner = new Spinner(1, 100, 1);
+        purchaseQuantitySpinners[index] = purchaseQuantitySpinner;
 
         Button cartRemovalButton = new Button("Supprimer");
         cartRemovalButton.setOnMouseClicked(mouseEventHandler);
@@ -91,7 +99,14 @@ public class ShopScene {
         purchaseControlBox.setSpacing(16);
         purchaseControlBoxes[index] = purchaseControlBox;
 
-        VBox articleBox = new VBox(nameLabel, priceLabel, addToCartButton);
+        VBox articleBox = new VBox(nameLabel, priceLabel);
+
+        if(article.purchaseQuantity > 0) {
+            articleBox.getChildren().add(purchaseControlBox);
+            setSpinnerValue(purchaseQuantitySpinner, article.purchaseQuantity);
+        } else {
+            articleBox.getChildren().add(addToCartButton);
+        }
 
         articleBox.setSpacing(16);
         goodsPane.getChildren().add(articleBox);
@@ -101,6 +116,7 @@ public class ShopScene {
         goodsPane.getChildren().clear();
         addToCartButtons = new Button[articles.length];
         purchaseControlBoxes = new HBox[articles.length];
+        purchaseQuantitySpinners = new Spinner[articles.length];
         cartRemovalButtons = new Button[articles.length];
 
         for(int i = 0; i < articles.length; i++) {
@@ -118,6 +134,7 @@ public class ShopScene {
             if(source == addToCartButtons[i]) {
                 goodPaneChilds.remove(2);
                 goodPaneChilds.add(purchaseControlBoxes[i]);
+                setSpinnerValue(purchaseQuantitySpinners[i], 1);
             }
 
             if(source == cartRemovalButtons[i]) {
