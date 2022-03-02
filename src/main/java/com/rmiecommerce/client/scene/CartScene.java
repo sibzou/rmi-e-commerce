@@ -1,5 +1,8 @@
 package com.rmiecommerce.client.scene;
 
+import com.rmiecommerce.client.Article;
+import com.rmiecommerce.client.CartEntry;
+
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,10 +19,11 @@ import javafx.scene.text.Font;
 
 public class CartScene {
     private final VBox mainBox;
+    private final VBox cartBox;
     private final Button backButton;
 
     public CartScene(EventHandler<MouseEvent> mouseEventHandler) {
-        VBox cartBox = new VBox();
+        cartBox = new VBox();
         cartBox.setSpacing(16);
         cartBox.setPadding(new Insets(16));
 
@@ -43,16 +47,14 @@ public class CartScene {
         mainBox = new VBox(cartScrollPane, bottomBar);
     }
 
-    private void addArticleToCart(String articleName, float articlePrice,
-        int purchaseQuantity, VBox cartBox) {
-
-        Label nameLabel = new Label("Caisse à outil XL 350 avec tournevis cruciforme");
+    private void addArticleToCart(Article article, int purchaseQuantity) {
+        Label nameLabel = new Label(article.name);
         nameLabel.setFont(new Font(16));
         nameLabel.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
         Spinner purchaseQuantitySpinner = new Spinner(1, 100, purchaseQuantity);
-        Label priceLabel = new Label("16,90 €");
+        Label priceLabel = new Label(article.price + " €");
         Button deleteButton = new Button("Supprimer");
 
         HBox articleBox = new HBox(nameLabel, purchaseQuantitySpinner,
@@ -61,6 +63,15 @@ public class CartScene {
         articleBox.setAlignment(Pos.CENTER_LEFT);
         articleBox.setSpacing(16);
         cartBox.getChildren().add(articleBox);
+    }
+
+    public void fillCart(Article[] articles, CartEntry[] cart) {
+        cartBox.getChildren().clear();
+
+        for(CartEntry cartEntry : cart) {
+            addArticleToCart(articles[cartEntry.articleIndex],
+                cartEntry.purchaseQuantity);
+        }
     }
 
     public boolean onMouseClick(MouseEvent event) {

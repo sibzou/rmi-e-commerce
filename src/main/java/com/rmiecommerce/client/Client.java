@@ -31,7 +31,9 @@ public class Client extends Application {
     private void onComboBoxAction(ActionEvent event) {
         Article[] articles = fakeRmi.getShopArticles();
         CartEntry[] cart = fakeRmi.getCart();
+
         shopScene.addArticles(articles, cart);
+        cartScene.fillCart(articles, cart);
     }
 
     @Override
