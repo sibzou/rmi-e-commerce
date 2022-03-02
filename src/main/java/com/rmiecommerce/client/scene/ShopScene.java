@@ -63,6 +63,7 @@ public class ShopScene {
         VBox.setVgrow(goodsScrollPane, Priority.ALWAYS);
 
         seeCartButton = new Button("Voir mon panier");
+        seeCartButton.setDisable(true);
         seeCartButton.setOnMouseClicked(mouseEventHandler);
 
         HBox bottomBar = new HBox(seeCartButton);
@@ -114,6 +115,8 @@ public class ShopScene {
 
     public void addArticles(Article[] articles) {
         goodsPane.getChildren().clear();
+        seeCartButton.setDisable(false);
+
         addToCartButtons = new Button[articles.length];
         purchaseControlBoxes = new HBox[articles.length];
         purchaseQuantitySpinners = new Spinner[articles.length];
