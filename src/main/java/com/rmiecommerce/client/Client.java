@@ -21,7 +21,11 @@ public class Client extends Application {
     private SuccessScene successScene;
 
     private void onMouseClick(MouseEvent event) {
-        shopScene.onMouseClick(event);
+        if(shopScene.onMouseClick(event)) {
+            cartScene.show(scene);
+        } else if(cartScene.onMouseClick(event)) {
+            shopScene.show(scene);
+        }
     }
 
     private void onComboBoxAction(ActionEvent event) {
@@ -38,7 +42,7 @@ public class Client extends Application {
         fakeRmi = new FakeRmi();
 
         shopScene = new ShopScene(this::onMouseClick, this::onComboBoxAction);
-        cartScene = new CartScene();
+        cartScene = new CartScene(this::onMouseClick);
         paymentScene = new PaymentScene();
         successScene = new SuccessScene(this::onMouseClick);
 

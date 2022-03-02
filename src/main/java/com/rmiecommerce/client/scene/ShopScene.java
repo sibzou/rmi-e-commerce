@@ -127,8 +127,12 @@ public class ShopScene {
         }
     }
 
-    public void onMouseClick(MouseEvent event) {
+    public boolean onMouseClick(MouseEvent event) {
         Object source = event.getSource();
+
+        if(source == seeCartButton) {
+            return true;
+        }
 
         for(int i = 0; i < addToCartButtons.length; i++) {
             Pane goodPane = (Pane)goodsPane.getChildren().get(i);
@@ -145,6 +149,8 @@ public class ShopScene {
                 goodPaneChilds.add(addToCartButtons[i]);
             }
         }
+
+        return false;
     }
 
     public void show(Scene scene) {
