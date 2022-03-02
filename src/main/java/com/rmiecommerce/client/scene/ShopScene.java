@@ -1,6 +1,7 @@
 package com.rmiecommerce.client.scene;
 
 import com.rmiecommerce.client.Article;
+import com.rmiecommerce.client.CartEntry;
 
 import java.util.List;
 
@@ -78,7 +79,9 @@ public class ShopScene {
         spinner.getValueFactory().setValue(value);
     }
 
-    private void addArticleInShop(Article article, int index) {
+    private void addArticleInShop(Article article, int purchaseQuantity,
+            int index) {
+
         Label nameLabel = new Label(article.name);
         nameLabel.setFont(new Font(16));
 
@@ -102,9 +105,9 @@ public class ShopScene {
 
         VBox articleBox = new VBox(nameLabel, priceLabel);
 
-        if(article.purchaseQuantity > 0) {
+        if(purchaseQuantity > 0) {
             articleBox.getChildren().add(purchaseControlBox);
-            setSpinnerValue(purchaseQuantitySpinner, article.purchaseQuantity);
+            setSpinnerValue(purchaseQuantitySpinner, purchaseQuantity);
         } else {
             articleBox.getChildren().add(addToCartButton);
         }
@@ -113,7 +116,17 @@ public class ShopScene {
         goodsPane.getChildren().add(articleBox);
     }
 
-    public void addArticles(Article[] articles) {
+    private int getPurchaseQuantity(CartEntry[] cart, int articleIndex) {
+        for(CartEntry cartEntry : cart) {
+            if(cartEntry.articleIndex == articleIndex) {
+                return cartEntry.purchaseQuantity;
+            }
+        }
+
+        return 0;
+    }
+
+    public void addArticles(Article[] articles, CartEntry[] cart) {
         goodsPane.getChildren().clear();
         seeCartButton.setDisable(false);
 
@@ -123,7 +136,8 @@ public class ShopScene {
         cartRemovalButtons = new Button[articles.length];
 
         for(int i = 0; i < articles.length; i++) {
-            addArticleInShop(articles[i], i);
+            int purchaseQuantity = getPurchaseQuantity(cart, i);
+            addArticleInShop(articles[i], purchaseQuantity, i);
         }
     }
 

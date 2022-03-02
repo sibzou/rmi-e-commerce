@@ -30,7 +30,8 @@ public class Client extends Application {
 
     private void onComboBoxAction(ActionEvent event) {
         Article[] articles = fakeRmi.getShopArticles();
-        shopScene.addArticles(articles);
+        CartEntry[] cart = fakeRmi.getCart();
+        shopScene.addArticles(articles, cart);
     }
 
     @Override
