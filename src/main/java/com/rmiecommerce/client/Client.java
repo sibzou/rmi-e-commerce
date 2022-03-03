@@ -21,9 +21,16 @@ public class Client extends Application {
     private SuccessScene successScene;
 
     private void onMouseClick(MouseEvent event) {
-        if(shopScene.onMouseClick(event)) {
+        ShopScene.ClickResult clickRes = new ShopScene.ClickResult();
+        shopScene.onMouseClick(event, clickRes);
+
+        if(clickRes.type == ShopScene.ClickResult.Type.SEE_CART) {
             cartScene.show(scene);
-        } else if(cartScene.onMouseClick(event)) {
+        } else if(clickRes.type == ShopScene.ClickResult.Type.CART_EVENT) {
+            cartScene.onCartEvent(clickRes.cartEvent);
+        }
+
+        if(cartScene.onMouseClick(event)) {
             shopScene.show(scene);
         }
     }

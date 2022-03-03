@@ -2,6 +2,7 @@ package com.rmiecommerce.client.scene;
 
 import com.rmiecommerce.client.Article;
 import com.rmiecommerce.client.CartEntry;
+import com.rmiecommerce.client.CartEvent;
 
 import java.util.List;
 
@@ -34,6 +35,16 @@ public class ShopScene {
     private Spinner[] purchaseQuantitySpinners;
     private Button[] cartRemovalButtons;
     private final EventHandler<MouseEvent> mouseEventHandler;
+
+    public static class ClickResult {
+        public enum Type {
+            SEE_CART,
+            CART_EVENT
+        }
+
+        public Type type;
+        public CartEvent cartEvent;
+    }
 
     public ShopScene(EventHandler<MouseEvent> mouseEventHandler,
             EventHandler<ActionEvent> comboBoxActionHandler) {
@@ -116,9 +127,9 @@ public class ShopScene {
         goodsPane.getChildren().add(articleBox);
     }
 
-    private int getPurchaseQuantity(CartEntry[] cart, Article article) {
+    private int getPurchaseQuantity(CartEntry[] cart, int articleIndex) {
         for(CartEntry cartEntry : cart) {
-            if(cartEntry.articleId == article.id) {
+            if(cartEntry.articleIndex == articleIndex) {
                 return cartEntry.purchaseQuantity;
             }
         }
@@ -136,36 +147,36 @@ public class ShopScene {
         cartRemovalButtons = new Button[articles.length];
 
         for(int i = 0; i < articles.length; i++) {
-            Article article = articles[i];
-            int purchaseQuantity = getPurchaseQuantity(cart, article);
-            addArticleInShop(article, purchaseQuantity, i);
+            int purchaseQuantity = getPurchaseQuantity(cart, i);
+            addArticleInShop(articles[i], purchaseQuantity, i);
         }
     }
 
-    public boolean onMouseClick(MouseEvent event) {
+    public void onMouseClick(MouseEvent event, ClickResult res) {
         Object source = event.getSource();
 
         if(source == seeCartButton) {
-            return true;
-        }
+            res.type = ClickResult.Type.SEE_CART;
+        } else {
+            for(int i = 0; i < addToCartButtons.length; i++) {
+                Pane goodPane = (Pane)goodsPane.getChildren().get(i);
+                List<Node> goodPaneChilds = goodPane.getChildren();
 
-        for(int i = 0; i < addToCartButtons.length; i++) {
-            Pane goodPane = (Pane)goodsPane.getChildren().get(i);
-            List<Node> goodPaneChilds = goodPane.getChildren();
+                if(source == addToCartButtons[i]) {
+                    goodPaneChilds.remove(2);
+                    goodPaneChilds.add(purchaseControlBoxes[i]);
+                    setSpinnerValue(purchaseQuantitySpinners[i], 1);
 
-            if(source == addToCartButtons[i]) {
-                goodPaneChilds.remove(2);
-                goodPaneChilds.add(purchaseControlBoxes[i]);
-                setSpinnerValue(purchaseQuantitySpinners[i], 1);
+                    CartEntry cartEntry = new CartEntry(i, 1);
+                    res.type = ClickResult.Type.CART_EVENT;
+                    res.cartEvent = new CartEvent(CartEvent.Type.ADD,
+                        cartEntry);
+                } else if(source == cartRemovalButtons[i]) {
+                    goodPaneChilds.remove(2);
+                    goodPaneChilds.add(addToCartButtons[i]);
+                }
             }
-
-            if(source == cartRemovalButtons[i]) {
-                goodPaneChilds.remove(2);
-                goodPaneChilds.add(addToCartButtons[i]);
-            }
         }
-
-        return false;
     }
 
     public void show(Scene scene) {

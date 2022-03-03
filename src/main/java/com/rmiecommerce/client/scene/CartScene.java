@@ -2,6 +2,10 @@ package com.rmiecommerce.client.scene;
 
 import com.rmiecommerce.client.Article;
 import com.rmiecommerce.client.CartEntry;
+import com.rmiecommerce.client.CartEvent;
+
+import java.util.Arrays;
+import java.util.ArrayList;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -20,7 +24,11 @@ import javafx.scene.text.Font;
 public class CartScene {
     private final VBox mainBox;
     private final VBox cartBox;
+    private final Label totalLabel;
     private final Button backButton;
+
+    private Article[] articles;
+    private ArrayList<CartEntry> cart;
 
     public CartScene(EventHandler<MouseEvent> mouseEventHandler) {
         cartBox = new VBox();
@@ -31,7 +39,7 @@ public class CartScene {
         cartScrollPane.setFitToWidth(true);
         VBox.setVgrow(cartScrollPane, Priority.ALWAYS);
 
-        Label totalLabel = new Label("Total : 23,87 €");
+        totalLabel = new Label();
         totalLabel.setFont(new Font(16));
 
         backButton = new Button("Revenir au magasin");
@@ -45,6 +53,17 @@ public class CartScene {
         bottomBar.setAlignment(Pos.CENTER_RIGHT);
 
         mainBox = new VBox(cartScrollPane, bottomBar);
+    }
+
+    private void updateTotalLabel() {
+        double totalPrice = 0;
+
+        for(CartEntry cartEntry : cart) {
+            Article article = articles[cartEntry.articleIndex];
+            totalPrice += article.price * cartEntry.purchaseQuantity;
+        }
+
+        totalLabel.setText("Total : " + totalPrice + " €");
     }
 
     private void addArticleToCart(Article article, int purchaseQuantity) {
@@ -65,22 +84,27 @@ public class CartScene {
         cartBox.getChildren().add(articleBox);
     }
 
-    private Article getArticleFromId(Article articles[], int articleId) {
-        for(Article article : articles) {
-            if(article.id == articleId) {
-                return article;
-            }
-        }
-
-        return null;
-    }
-
     public void fillCart(Article[] articles, CartEntry[] cart) {
         cartBox.getChildren().clear();
+        this.articles = articles;
+        this.cart = new ArrayList<>(Arrays.asList(cart));
 
         for(CartEntry cartEntry : cart) {
-            Article article = getArticleFromId(articles, cartEntry.articleId);
+            Article article = articles[cartEntry.articleIndex];
             addArticleToCart(article, cartEntry.purchaseQuantity);
+        }
+
+        updateTotalLabel();
+    }
+
+    public void onCartEvent(CartEvent cartEvent) {
+        if(cartEvent.type == CartEvent.Type.ADD) {
+            CartEntry cartEntry = cartEvent.cartEntry;
+            Article article = articles[cartEntry.articleIndex];
+            addArticleToCart(article, cartEntry.purchaseQuantity);
+
+            cart.add(cartEntry);
+            updateTotalLabel();
         }
     }
 

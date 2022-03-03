@@ -1,12 +1,10 @@
 package com.rmiecommerce.client;
 
 public class Article {
-    public int id;
-    public String name;
-    public double price;
+    public final String name;
+    public final double price;
 
-    public Article(int id, String name, double price) {
-        this.id = id;
+    public Article(String name, double price) {
         this.name = name;
         this.price = price;
     }
