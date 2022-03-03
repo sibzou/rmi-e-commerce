@@ -37,7 +37,7 @@ public class ShopScene {
     private final EventHandler<MouseEvent> mouseEventHandler;
 
     public static class ClickResult {
-        public enum Type {
+        public static enum Type {
             SEE_CART,
             CART_EVENT
         }
@@ -102,7 +102,7 @@ public class ShopScene {
         addToCartButton.setOnMouseClicked(mouseEventHandler);
         addToCartButtons[index] = addToCartButton;
 
-        Spinner purchaseQuantitySpinner = new Spinner(1, 100, 1);
+        Spinner purchaseQuantitySpinner = new Spinner(1, 100, purchaseQuantity);
         purchaseQuantitySpinners[index] = purchaseQuantitySpinner;
 
         Button cartRemovalButton = new Button("Supprimer");
@@ -118,7 +118,6 @@ public class ShopScene {
 
         if(purchaseQuantity > 0) {
             articleBox.getChildren().add(purchaseControlBox);
-            setSpinnerValue(purchaseQuantitySpinner, purchaseQuantity);
         } else {
             articleBox.getChildren().add(addToCartButton);
         }
@@ -152,6 +151,20 @@ public class ShopScene {
         }
     }
 
+    private void removeFromCart(int articleIndex) {
+        Pane goodPane = (Pane)goodsPane.getChildren().get(articleIndex);
+        List<Node> goodPaneChilds = goodPane.getChildren();
+
+        goodPaneChilds.remove(2);
+        goodPaneChilds.add(addToCartButtons[articleIndex]);
+    }
+
+    public void onCartEvent(CartEvent cartEvent) {
+        if(cartEvent.type == CartEvent.Type.DELETE) {
+            removeFromCart(cartEvent.articleIndex);
+        }
+    }
+
     public void onMouseClick(MouseEvent event, ClickResult res) {
         Object source = event.getSource();
 
@@ -159,10 +172,10 @@ public class ShopScene {
             res.type = ClickResult.Type.SEE_CART;
         } else {
             for(int i = 0; i < addToCartButtons.length; i++) {
-                Pane goodPane = (Pane)goodsPane.getChildren().get(i);
-                List<Node> goodPaneChilds = goodPane.getChildren();
-
                 if(source == addToCartButtons[i]) {
+                    Pane goodPane = (Pane)goodsPane.getChildren().get(i);
+                    List<Node> goodPaneChilds = goodPane.getChildren();
+
                     goodPaneChilds.remove(2);
                     goodPaneChilds.add(purchaseControlBoxes[i]);
                     setSpinnerValue(purchaseQuantitySpinners[i], 1);
@@ -172,8 +185,9 @@ public class ShopScene {
                     res.cartEvent = new CartEvent(CartEvent.Type.ADD,
                         cartEntry);
                 } else if(source == cartRemovalButtons[i]) {
-                    goodPaneChilds.remove(2);
-                    goodPaneChilds.add(addToCartButtons[i]);
+                    removeFromCart(i);
+                    res.type = ClickResult.Type.CART_EVENT;
+                    res.cartEvent = new CartEvent(CartEvent.Type.DELETE, i);
                 }
             }
         }

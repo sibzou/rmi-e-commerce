@@ -26,9 +26,21 @@ public class CartScene {
     private final VBox cartBox;
     private final Label totalLabel;
     private final Button backButton;
+    private final ArrayList<Button> removeButtons;
+    private final EventHandler<MouseEvent> mouseEventHandler;
 
     private Article[] articles;
-    private ArrayList<CartEntry> cart;
+    private final ArrayList<CartEntry> cart;
+
+    public static class ClickResult {
+        public static enum Type {
+            BACK_TO_SHOP,
+            CART_EVENT
+        }
+
+        public Type type;
+        public CartEvent cartEvent;
+    }
 
     public CartScene(EventHandler<MouseEvent> mouseEventHandler) {
         cartBox = new VBox();
@@ -53,6 +65,10 @@ public class CartScene {
         bottomBar.setAlignment(Pos.CENTER_RIGHT);
 
         mainBox = new VBox(cartScrollPane, bottomBar);
+
+        cart = new ArrayList<>();
+        removeButtons = new ArrayList<>();
+        this.mouseEventHandler = mouseEventHandler;
     }
 
     private void updateTotalLabel() {
@@ -74,10 +90,13 @@ public class CartScene {
 
         Spinner purchaseQuantitySpinner = new Spinner(1, 100, purchaseQuantity);
         Label priceLabel = new Label((article.price * purchaseQuantity) + " €");
-        Button deleteButton = new Button("Supprimer");
+
+        Button removeButton = new Button("Supprimer");
+        removeButton.setOnMouseClicked(mouseEventHandler);
+        removeButtons.add(removeButton);
 
         HBox articleBox = new HBox(nameLabel, purchaseQuantitySpinner,
-            priceLabel, deleteButton);
+            priceLabel, removeButton);
 
         articleBox.setAlignment(Pos.CENTER_LEFT);
         articleBox.setSpacing(16);
@@ -87,13 +106,34 @@ public class CartScene {
     public void fillCart(Article[] articles, CartEntry[] cart) {
         cartBox.getChildren().clear();
         this.articles = articles;
-        this.cart = new ArrayList<>(Arrays.asList(cart));
+
+        this.cart.clear();
+        for(CartEntry cartEntry : cart) {
+            this.cart.add(cartEntry);
+        }
 
         for(CartEntry cartEntry : cart) {
             Article article = articles[cartEntry.articleIndex];
             addArticleToCart(article, cartEntry.purchaseQuantity);
         }
 
+        updateTotalLabel();
+    }
+
+    private int getCartEntryIndex(int articleIndex) {
+        for(int i = 0; i < cart.size(); i++) {
+            if(cart.get(i).articleIndex == articleIndex) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private void deleteCartEntry(int index) {
+        cartBox.getChildren().remove(index);
+        cart.remove(index);
+        removeButtons.remove(index);
         updateTotalLabel();
     }
 
@@ -105,12 +145,28 @@ public class CartScene {
 
             cart.add(cartEntry);
             updateTotalLabel();
+        } else if(cartEvent.type == CartEvent.Type.DELETE) {
+            int cartEntryIndex = getCartEntryIndex(cartEvent.articleIndex);
+            deleteCartEntry(cartEntryIndex);
         }
     }
 
-    public boolean onMouseClick(MouseEvent event) {
+    public void onMouseClick(MouseEvent event, ClickResult clickResult) {
         Object source = event.getSource();
-        return source == backButton;
+
+        if(source == backButton) {
+            clickResult.type = ClickResult.Type.BACK_TO_SHOP;
+        } else {
+            for(int i = 0; i < removeButtons.size(); i++) {
+                if(source == removeButtons.get(i)) {
+                    clickResult.type = ClickResult.Type.CART_EVENT;
+                    clickResult.cartEvent = new CartEvent(CartEvent.Type.DELETE,
+                        cart.get(i).articleIndex);
+
+                    deleteCartEntry(i);
+                }
+            }
+        }
     }
 
     public void show(Scene scene) {

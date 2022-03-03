@@ -20,7 +20,7 @@ public class Client extends Application {
     private PaymentScene paymentScene;
     private SuccessScene successScene;
 
-    private void onMouseClick(MouseEvent event) {
+    private void onShopSceneClick(MouseEvent event) {
         ShopScene.ClickResult clickRes = new ShopScene.ClickResult();
         shopScene.onMouseClick(event, clickRes);
 
@@ -29,10 +29,22 @@ public class Client extends Application {
         } else if(clickRes.type == ShopScene.ClickResult.Type.CART_EVENT) {
             cartScene.onCartEvent(clickRes.cartEvent);
         }
+    }
 
-        if(cartScene.onMouseClick(event)) {
+    private void onCartSceneClick(MouseEvent event) {
+        CartScene.ClickResult clickRes = new CartScene.ClickResult();
+        cartScene.onMouseClick(event, clickRes);
+
+        if(clickRes.type == CartScene.ClickResult.Type.BACK_TO_SHOP) {
             shopScene.show(scene);
+        } else if(clickRes.type == CartScene.ClickResult.Type.CART_EVENT) {
+            shopScene.onCartEvent(clickRes.cartEvent);
         }
+    }
+
+    private void onMouseClick(MouseEvent event) {
+        onShopSceneClick(event);
+        onCartSceneClick(event);
     }
 
     private void onComboBoxAction(ActionEvent event) {
