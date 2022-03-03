@@ -3,10 +3,13 @@ package com.rmiecommerce.client.scene;
 import com.rmiecommerce.client.Article;
 import com.rmiecommerce.client.CartEntry;
 import com.rmiecommerce.client.CartEvent;
+import com.rmiecommerce.client.Client;
 
 import java.util.Arrays;
 import java.util.ArrayList;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,8 +29,10 @@ public class CartScene {
     private final VBox cartBox;
     private final Label totalLabel;
     private final Button backButton;
+    private final ArrayList<Spinner> purchaseQuantitySpinners;
     private final ArrayList<Button> removeButtons;
     private final EventHandler<MouseEvent> mouseEventHandler;
+    private final ChangeListener<Integer> spinnerEventHandler;
 
     private Article[] articles;
     private final ArrayList<CartEntry> cart;
@@ -42,7 +47,9 @@ public class CartScene {
         public CartEvent cartEvent;
     }
 
-    public CartScene(EventHandler<MouseEvent> mouseEventHandler) {
+    public CartScene(EventHandler<MouseEvent> mouseEventHandler,
+            ChangeListener<Integer> spinnerEventHandler) {
+
         cartBox = new VBox();
         cartBox.setSpacing(16);
         cartBox.setPadding(new Insets(16));
@@ -67,8 +74,11 @@ public class CartScene {
         mainBox = new VBox(cartScrollPane, bottomBar);
 
         cart = new ArrayList<>();
+        purchaseQuantitySpinners = new ArrayList<>();
         removeButtons = new ArrayList<>();
+
         this.mouseEventHandler = mouseEventHandler;
+        this.spinnerEventHandler = spinnerEventHandler;
     }
 
     private void updateTotalLabel() {
@@ -89,6 +99,10 @@ public class CartScene {
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
         Spinner purchaseQuantitySpinner = new Spinner(1, 100, purchaseQuantity);
+        Client.setSpinnerChangeListener(purchaseQuantitySpinner,
+            spinnerEventHandler);
+        purchaseQuantitySpinners.add(purchaseQuantitySpinner);
+
         Label priceLabel = new Label((article.price * purchaseQuantity) + " €");
 
         Button removeButton = new Button("Supprimer");
@@ -149,6 +163,18 @@ public class CartScene {
             int cartEntryIndex =
                 getCartEntryIndex(cartEvent.cartEntry.articleIndex);
             deleteCartEntry(cartEntryIndex);
+        } else if(cartEvent.type == CartEvent.Type.CHANGE_QUANTITY) {
+            CartEntry cartEntry = cartEvent.cartEntry;
+            int cartEntryIndex = getCartEntryIndex(cartEntry.articleIndex);
+
+            Spinner spinner = purchaseQuantitySpinners.get(cartEntryIndex);
+            Client.setSpinnerValue(spinner, cartEntry.purchaseQuantity,
+                spinnerEventHandler);
+
+            cart.get(cartEntryIndex).purchaseQuantity
+                = cartEntry.purchaseQuantity;
+
+            updateTotalLabel();
         }
     }
 
@@ -166,6 +192,23 @@ public class CartScene {
 
                     deleteCartEntry(i);
                 }
+            }
+        }
+    }
+
+    public void onSpinnerValueChange(Client.SpinnerChangeResult changeRes,
+            ObservableValue<? extends Integer> observable, int newValue) {
+
+        for(int i = 0; i < purchaseQuantitySpinners.size(); i++) {
+            Spinner purchaseQuantitySpinner = purchaseQuantitySpinners.get(i);
+
+            if(observable == purchaseQuantitySpinner.valueProperty()) {
+                CartEntry cartEntry = cart.get(i);
+                cartEntry.purchaseQuantity = newValue;
+                updateTotalLabel();
+
+                changeRes.cartEvent
+                    = new CartEvent(CartEvent.Type.CHANGE_QUANTITY, cartEntry);
             }
         }
     }

@@ -7,6 +7,8 @@ import com.rmiecommerce.client.Client;
 
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -36,6 +38,7 @@ public class ShopScene {
     private Spinner[] purchaseQuantitySpinners;
     private Button[] cartRemovalButtons;
     private final EventHandler<MouseEvent> mouseEventHandler;
+    private final ChangeListener<Integer> spinnerEventHandler;
 
     public static class ClickResult {
         public static enum Type {
@@ -48,9 +51,11 @@ public class ShopScene {
     }
 
     public ShopScene(EventHandler<MouseEvent> mouseEventHandler,
-            EventHandler<ActionEvent> comboBoxActionHandler) {
+            EventHandler<ActionEvent> comboBoxActionHandler,
+            ChangeListener<Integer> spinnerEventHandler) {
 
         this.mouseEventHandler = mouseEventHandler;
+        this.spinnerEventHandler = spinnerEventHandler;
 
         Label shopSelectorLabel = new Label("Magasin");
         ComboBox<String> shopSelectorComboBox = new ComboBox<String>();
@@ -99,6 +104,8 @@ public class ShopScene {
         addToCartButtons[index] = addToCartButton;
 
         Spinner purchaseQuantitySpinner = new Spinner(1, 100, purchaseQuantity);
+        Client.setSpinnerChangeListener(purchaseQuantitySpinner,
+            spinnerEventHandler);
         purchaseQuantitySpinners[index] = purchaseQuantitySpinner;
 
         Button cartRemovalButton = new Button("Supprimer");
@@ -158,6 +165,12 @@ public class ShopScene {
     public void onCartEvent(CartEvent cartEvent) {
         if(cartEvent.type == CartEvent.Type.DELETE) {
             removeFromCart(cartEvent.cartEntry.articleIndex);
+        } else if(cartEvent.type == CartEvent.Type.CHANGE_QUANTITY) {
+            CartEntry cartEntry = cartEvent.cartEntry;
+            Spinner spinner = purchaseQuantitySpinners[cartEntry.articleIndex];
+
+            Client.setSpinnerValue(spinner, cartEntry.purchaseQuantity,
+                spinnerEventHandler);
         }
     }
 
@@ -174,7 +187,8 @@ public class ShopScene {
 
                     goodPaneChilds.remove(2);
                     goodPaneChilds.add(purchaseControlBoxes[i]);
-                    Client.setSpinnerValue(purchaseQuantitySpinners[i], 1);
+                    Client.setSpinnerValue(purchaseQuantitySpinners[i], 1,
+                        spinnerEventHandler);
 
                     CartEntry cartEntry = new CartEntry(i, 1);
                     res.type = ClickResult.Type.CART_EVENT;
@@ -188,6 +202,18 @@ public class ShopScene {
                     res.cartEvent = new CartEvent(CartEvent.Type.DELETE,
                         cartEntry);
                 }
+            }
+        }
+    }
+
+    public void onSpinnerValueChange(Client.SpinnerChangeResult changeRes,
+            ObservableValue<? extends Integer> observable, int newValue) {
+
+        for(int i = 0; i < purchaseQuantitySpinners.length; i++) {
+            if(observable == purchaseQuantitySpinners[i].valueProperty()) {
+                CartEntry cartEntry = new CartEntry(i, newValue);
+                changeRes.cartEvent =
+                    new CartEvent(CartEvent.Type.CHANGE_QUANTITY, cartEntry);
             }
         }
     }

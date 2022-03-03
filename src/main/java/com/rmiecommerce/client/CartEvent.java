@@ -3,7 +3,8 @@ package com.rmiecommerce.client;
 public class CartEvent {
     public static enum Type {
         ADD,
-        DELETE
+        DELETE,
+        CHANGE_QUANTITY
     }
 
     public final Type type;
