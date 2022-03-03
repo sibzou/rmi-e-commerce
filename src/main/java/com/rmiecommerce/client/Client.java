@@ -8,6 +8,7 @@ import com.rmiecommerce.client.scene.SuccessScene;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
+import javafx.scene.control.Spinner;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 
@@ -53,6 +54,11 @@ public class Client extends Application {
 
         shopScene.addArticles(articles, cart);
         cartScene.fillCart(articles, cart);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void setSpinnerValue(Spinner spinner, int value) {
+        spinner.getValueFactory().setValue(value);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.rmiecommerce.client.scene;
 import com.rmiecommerce.client.Article;
 import com.rmiecommerce.client.CartEntry;
 import com.rmiecommerce.client.CartEvent;
+import com.rmiecommerce.client.Client;
 
 import java.util.List;
 
@@ -85,11 +86,6 @@ public class ShopScene {
         mainBox = new VBox(shopSelector, goodsScrollPane, bottomBar);
     }
 
-    @SuppressWarnings("unchecked")
-    private static void setSpinnerValue(Spinner spinner, int value) {
-        spinner.getValueFactory().setValue(value);
-    }
-
     private void addArticleInShop(Article article, int purchaseQuantity,
             int index) {
 
@@ -161,7 +157,7 @@ public class ShopScene {
 
     public void onCartEvent(CartEvent cartEvent) {
         if(cartEvent.type == CartEvent.Type.DELETE) {
-            removeFromCart(cartEvent.articleIndex);
+            removeFromCart(cartEvent.cartEntry.articleIndex);
         }
     }
 
@@ -178,7 +174,7 @@ public class ShopScene {
 
                     goodPaneChilds.remove(2);
                     goodPaneChilds.add(purchaseControlBoxes[i]);
-                    setSpinnerValue(purchaseQuantitySpinners[i], 1);
+                    Client.setSpinnerValue(purchaseQuantitySpinners[i], 1);
 
                     CartEntry cartEntry = new CartEntry(i, 1);
                     res.type = ClickResult.Type.CART_EVENT;
@@ -186,8 +182,11 @@ public class ShopScene {
                         cartEntry);
                 } else if(source == cartRemovalButtons[i]) {
                     removeFromCart(i);
+
+                    CartEntry cartEntry = new CartEntry(i, 0);
                     res.type = ClickResult.Type.CART_EVENT;
-                    res.cartEvent = new CartEvent(CartEvent.Type.DELETE, i);
+                    res.cartEvent = new CartEvent(CartEvent.Type.DELETE,
+                        cartEntry);
                 }
             }
         }

@@ -146,7 +146,8 @@ public class CartScene {
             cart.add(cartEntry);
             updateTotalLabel();
         } else if(cartEvent.type == CartEvent.Type.DELETE) {
-            int cartEntryIndex = getCartEntryIndex(cartEvent.articleIndex);
+            int cartEntryIndex =
+                getCartEntryIndex(cartEvent.cartEntry.articleIndex);
             deleteCartEntry(cartEntryIndex);
         }
     }
@@ -161,7 +162,7 @@ public class CartScene {
                 if(source == removeButtons.get(i)) {
                     clickResult.type = ClickResult.Type.CART_EVENT;
                     clickResult.cartEvent = new CartEvent(CartEvent.Type.DELETE,
-                        cart.get(i).articleIndex);
+                        cart.get(i));
 
                     deleteCartEntry(i);
                 }
