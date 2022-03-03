@@ -116,9 +116,9 @@ public class ShopScene {
         goodsPane.getChildren().add(articleBox);
     }
 
-    private int getPurchaseQuantity(CartEntry[] cart, int articleIndex) {
+    private int getPurchaseQuantity(CartEntry[] cart, Article article) {
         for(CartEntry cartEntry : cart) {
-            if(cartEntry.articleIndex == articleIndex) {
+            if(cartEntry.articleId == article.id) {
                 return cartEntry.purchaseQuantity;
             }
         }
@@ -136,8 +136,9 @@ public class ShopScene {
         cartRemovalButtons = new Button[articles.length];
 
         for(int i = 0; i < articles.length; i++) {
-            int purchaseQuantity = getPurchaseQuantity(cart, i);
-            addArticleInShop(articles[i], purchaseQuantity, i);
+            Article article = articles[i];
+            int purchaseQuantity = getPurchaseQuantity(cart, article);
+            addArticleInShop(article, purchaseQuantity, i);
         }
     }
 

@@ -54,7 +54,7 @@ public class CartScene {
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
         Spinner purchaseQuantitySpinner = new Spinner(1, 100, purchaseQuantity);
-        Label priceLabel = new Label(article.price + " €");
+        Label priceLabel = new Label((article.price * purchaseQuantity) + " €");
         Button deleteButton = new Button("Supprimer");
 
         HBox articleBox = new HBox(nameLabel, purchaseQuantitySpinner,
@@ -65,12 +65,22 @@ public class CartScene {
         cartBox.getChildren().add(articleBox);
     }
 
+    private Article getArticleFromId(Article articles[], int articleId) {
+        for(Article article : articles) {
+            if(article.id == articleId) {
+                return article;
+            }
+        }
+
+        return null;
+    }
+
     public void fillCart(Article[] articles, CartEntry[] cart) {
         cartBox.getChildren().clear();
 
         for(CartEntry cartEntry : cart) {
-            addArticleToCart(articles[cartEntry.articleIndex],
-                cartEntry.purchaseQuantity);
+            Article article = getArticleFromId(articles, cartEntry.articleId);
+            addArticleToCart(article, cartEntry.purchaseQuantity);
         }
     }
 

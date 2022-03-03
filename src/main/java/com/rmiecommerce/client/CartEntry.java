@@ -1,11 +1,11 @@
 package com.rmiecommerce.client;
 
 public class CartEntry {
-    public int articleIndex;
+    public int articleId;
     public int purchaseQuantity;
 
-    public CartEntry(int articleIndex, int purchaseQuantity) {
-        this.articleIndex = articleIndex;
+    public CartEntry(int articleId, int purchaseQuantity) {
+        this.articleId = articleId;
         this.purchaseQuantity = purchaseQuantity;
     }
 }
