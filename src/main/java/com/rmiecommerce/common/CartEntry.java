@@ -1,6 +1,8 @@
-package com.rmiecommerce.client;
+package com.rmiecommerce.common;
 
-public class CartEntry {
+import java.io.Serializable;
+
+public class CartEntry implements Serializable {
     public int articleIndex;
     public int purchaseQuantity;
 

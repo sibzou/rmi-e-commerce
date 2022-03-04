@@ -1,9 +1,9 @@
 package com.rmiecommerce.client.scene;
 
-import com.rmiecommerce.client.Article;
-import com.rmiecommerce.client.CartEntry;
 import com.rmiecommerce.client.CartEvent;
 import com.rmiecommerce.client.Client;
+import com.rmiecommerce.common.Article;
+import com.rmiecommerce.common.CartEntry;
 
 import java.util.Arrays;
 import java.util.ArrayList;

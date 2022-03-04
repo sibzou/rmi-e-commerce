@@ -4,6 +4,14 @@ import com.rmiecommerce.client.scene.CartScene;
 import com.rmiecommerce.client.scene.PaymentScene;
 import com.rmiecommerce.client.scene.ShopScene;
 import com.rmiecommerce.client.scene.SuccessScene;
+import com.rmiecommerce.common.Article;
+import com.rmiecommerce.common.CartEntry;
+import com.rmiecommerce.shop.IShopRemote;
+
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -16,7 +24,7 @@ import javafx.stage.Stage;
 
 public class Client extends Application {
     private Scene scene;
-    private FakeRmi fakeRmi;
+    private IShopRemote shopRemote;
 
     private ShopScene shopScene;
     private CartScene cartScene;
@@ -60,13 +68,15 @@ public class Client extends Application {
         } else if(clickRes.type
                 == PaymentScene.ClickResult.Type.CONFIRM_PAYMENT) {
 
-            if(fakeRmi.pay(clickRes.creditCardNumber,
-                    clickRes.creditCardCryptogram)) {
+            try {
+                if(shopRemote.pay(clickRes.creditCardNumber,
+                        clickRes.creditCardCryptogram)) {
 
-                successScene.show(scene);
-            } else {
-                paymentScene.showError();
-            }
+                    successScene.show(scene);
+                } else {
+                    paymentScene.showError();
+                }
+            } catch(RemoteException ignored) {}
         }
     }
 
@@ -86,11 +96,18 @@ public class Client extends Application {
     }
 
     private void onComboBoxAction(ActionEvent event) {
-        Article[] articles = fakeRmi.getShopArticles();
-        CartEntry[] cart = fakeRmi.getCart();
+        try {
+            shopRemote = (IShopRemote)Naming.lookup("rmi://localhost:3007/shop");
+        } catch(NotBoundException | MalformedURLException
+            | RemoteException ignored) {}
 
-        shopScene.addArticles(articles, cart);
-        cartScene.fillCart(articles, cart);
+        try {
+            Article[] articles = shopRemote.getArticles();
+            CartEntry[] cart = shopRemote.getCart();
+
+            shopScene.addArticles(articles, cart);
+            cartScene.fillCart(articles, cart);
+        } catch(RemoteException ignored) {}
     }
 
     private void onShopSceneSpinnerChange(
@@ -148,8 +165,6 @@ public class Client extends Application {
         stage.setTitle("RMI e-commerce");
         stage.setWidth(800);
         stage.setHeight(600);
-
-        fakeRmi = new FakeRmi();
 
         shopScene = new ShopScene(this::onMouseClick, this::onComboBoxAction,
             this::onSpinnerValueChange);

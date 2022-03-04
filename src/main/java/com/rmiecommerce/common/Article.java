@@ -1,6 +1,8 @@
-package com.rmiecommerce.client;
+package com.rmiecommerce.common;
 
-public class Article {
+import java.io.Serializable;
+
+public class Article implements Serializable {
     public final String name;
     public final double price;
 

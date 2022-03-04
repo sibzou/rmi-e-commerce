@@ -1,5 +1,7 @@
 package com.rmiecommerce.client;
 
+import com.rmiecommerce.common.CartEntry;
+
 public class CartEvent {
     public static enum Type {
         ADD,
