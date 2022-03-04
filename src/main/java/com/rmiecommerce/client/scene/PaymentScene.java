@@ -13,9 +13,10 @@ import javafx.scene.text.Font;
 
 public class PaymentScene {
     private final VBox mainBox;
+    private final Label priceLabel;
 
     public PaymentScene() {
-        Label priceLabel = new Label("Total à payer : 23,87 €");
+        priceLabel = new Label();
         priceLabel.setFont(new Font(16));
 
         Label instructionLabel = new Label("Veuillez saisir votre numéro de carte bancaire ainsi que votre cryptogramme visuel afin de valider le paiement.");
@@ -48,7 +49,8 @@ public class PaymentScene {
         mainBox.setAlignment(Pos.CENTER);
     }
 
-    public void show(Scene scene) {
+    public void show(Scene scene, double totalPrice) {
+        priceLabel.setText("Total à payer : " + totalPrice + " €");
         scene.setRoot(mainBox);
     }
 }

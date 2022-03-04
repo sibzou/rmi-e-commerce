@@ -44,6 +44,8 @@ public class Client extends Application {
 
         if(clickRes.type == CartScene.ClickResult.Type.BACK_TO_SHOP) {
             shopScene.show(scene);
+        } else if(clickRes.type == CartScene.ClickResult.Type.GO_TO_PAYMENT) {
+            paymentScene.show(scene, clickRes.totalPrice);
         } else if(clickRes.type == CartScene.ClickResult.Type.CART_EVENT) {
             shopScene.onCartEvent(clickRes.cartEvent);
         }

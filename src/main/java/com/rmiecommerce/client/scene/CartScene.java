@@ -29,6 +29,7 @@ public class CartScene {
     private final VBox cartBox;
     private final Label totalLabel;
     private final Button backButton;
+    private final Button paymentButton;
     private final ArrayList<Spinner> purchaseQuantitySpinners;
     private final ArrayList<Label> priceLabels;
     private final ArrayList<Button> removeButtons;
@@ -41,11 +42,13 @@ public class CartScene {
     public static class ClickResult {
         public static enum Type {
             BACK_TO_SHOP,
+            GO_TO_PAYMENT,
             CART_EVENT
         }
 
         public Type type;
         public CartEvent cartEvent;
+        public double totalPrice;
     }
 
     public CartScene(EventHandler<MouseEvent> mouseEventHandler,
@@ -65,7 +68,8 @@ public class CartScene {
         backButton = new Button("Revenir au magasin");
         backButton.setOnMouseClicked(mouseEventHandler);
 
-        Button paymentButton = new Button("Procéder au paiement");
+        paymentButton = new Button("Procéder au paiement");
+        paymentButton.setOnMouseClicked(mouseEventHandler);
 
         HBox bottomBar = new HBox(totalLabel, backButton, paymentButton);
         bottomBar.setPadding(new Insets(16));
@@ -91,7 +95,7 @@ public class CartScene {
             .setText((article.price * cartEntry.purchaseQuantity) + " €");
     }
 
-    private void updateTotalLabel() {
+    private double getTotalPrice() {
         double totalPrice = 0;
 
         for(CartEntry cartEntry : cart) {
@@ -99,7 +103,13 @@ public class CartScene {
             totalPrice += article.price * cartEntry.purchaseQuantity;
         }
 
-        totalLabel.setText("Total : " + totalPrice + " €");
+        return totalPrice;
+    }
+
+    private void updateTotalLabel() {
+        double totalPrice = getTotalPrice();
+        totalLabel.setText("Total : " + getTotalPrice() + " €");
+        paymentButton.setDisable(totalPrice == 0);
     }
 
     private void addArticleToCart(Article article, int purchaseQuantity) {
@@ -207,6 +217,9 @@ public class CartScene {
 
         if(source == backButton) {
             clickResult.type = ClickResult.Type.BACK_TO_SHOP;
+        } else if(source == paymentButton) {
+            clickResult.type = ClickResult.Type.GO_TO_PAYMENT;
+            clickResult.totalPrice = getTotalPrice();
         } else {
             for(int i = 0; i < removeButtons.size(); i++) {
                 if(source == removeButtons.get(i)) {
