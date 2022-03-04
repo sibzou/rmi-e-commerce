@@ -15,4 +15,9 @@ public class FakeRmi {
             new CartEntry(1, 2)
         };
     }
+
+    public boolean pay(String creditCartNumber, String creditCardCryptogram) {
+        return creditCartNumber.equals("123")
+            && creditCardCryptogram.equals("321");
+    }
 }

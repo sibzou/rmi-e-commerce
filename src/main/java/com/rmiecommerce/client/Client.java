@@ -51,9 +51,36 @@ public class Client extends Application {
         }
     }
 
+    private void onPaymentSceneClick(MouseEvent event) {
+        PaymentScene.ClickResult clickRes = new PaymentScene.ClickResult();
+        paymentScene.onMouseClick(event, clickRes);
+
+        if(clickRes.type == PaymentScene.ClickResult.Type.BACK_TO_CART) {
+            cartScene.show(scene);
+        } else if(clickRes.type
+                == PaymentScene.ClickResult.Type.CONFIRM_PAYMENT) {
+
+            if(fakeRmi.pay(clickRes.creditCardNumber,
+                    clickRes.creditCardCryptogram)) {
+
+                successScene.show(scene);
+            } else {
+                paymentScene.showError();
+            }
+        }
+    }
+
+    private void onSuccessSceneClick(MouseEvent event) {
+        if(successScene.onMouseClick(event)) {
+            shopScene.show(scene);
+        }
+    }
+
     private void onMouseClick(MouseEvent event) {
         onShopSceneClick(event);
         onCartSceneClick(event);
+        onPaymentSceneClick(event);
+        onSuccessSceneClick(event);
     }
 
     private void onComboBoxAction(ActionEvent event) {
@@ -128,7 +155,7 @@ public class Client extends Application {
         cartScene = new CartScene(this::onMouseClick,
             this::onSpinnerValueChange);
 
-        paymentScene = new PaymentScene();
+        paymentScene = new PaymentScene(this::onMouseClick);
         successScene = new SuccessScene(this::onMouseClick);
 
         scene = shopScene.firstShow();

@@ -33,6 +33,10 @@ public class SuccessScene {
         mainBox.setAlignment(Pos.CENTER);
     }
 
+    public boolean onMouseClick(MouseEvent event) {
+        return event.getSource() == backToShopButton;
+    }
+
     public void show(Scene scene) {
         scene.setRoot(mainBox);
     }
