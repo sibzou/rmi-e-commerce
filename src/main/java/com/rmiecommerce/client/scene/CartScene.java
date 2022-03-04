@@ -30,6 +30,7 @@ public class CartScene {
     private final Label totalLabel;
     private final Button backButton;
     private final ArrayList<Spinner> purchaseQuantitySpinners;
+    private final ArrayList<Label> priceLabels;
     private final ArrayList<Button> removeButtons;
     private final EventHandler<MouseEvent> mouseEventHandler;
     private final ChangeListener<Integer> spinnerEventHandler;
@@ -75,10 +76,19 @@ public class CartScene {
 
         cart = new ArrayList<>();
         purchaseQuantitySpinners = new ArrayList<>();
+        priceLabels = new ArrayList<>();
         removeButtons = new ArrayList<>();
 
         this.mouseEventHandler = mouseEventHandler;
         this.spinnerEventHandler = spinnerEventHandler;
+    }
+
+    private void updateItemLabel(int index) {
+        CartEntry cartEntry = cart.get(index);
+        Article article = articles[cartEntry.articleIndex];
+
+        priceLabels.get(index)
+            .setText((article.price * cartEntry.purchaseQuantity) + " €");
     }
 
     private void updateTotalLabel() {
@@ -103,7 +113,8 @@ public class CartScene {
             spinnerEventHandler);
         purchaseQuantitySpinners.add(purchaseQuantitySpinner);
 
-        Label priceLabel = new Label((article.price * purchaseQuantity) + " €");
+        Label priceLabel = new Label();
+        priceLabels.add(priceLabel);
 
         Button removeButton = new Button("Supprimer");
         removeButton.setOnMouseClicked(mouseEventHandler);
@@ -126,9 +137,11 @@ public class CartScene {
             this.cart.add(cartEntry);
         }
 
-        for(CartEntry cartEntry : cart) {
+        for(int i = 0; i < cart.length; i++) {
+            CartEntry cartEntry = cart[i];
             Article article = articles[cartEntry.articleIndex];
             addArticleToCart(article, cartEntry.purchaseQuantity);
+            updateItemLabel(i);
         }
 
         updateTotalLabel();
@@ -147,7 +160,11 @@ public class CartScene {
     private void deleteCartEntry(int index) {
         cartBox.getChildren().remove(index);
         cart.remove(index);
+
+        purchaseQuantitySpinners.remove(index);
+        priceLabels.remove(index);
         removeButtons.remove(index);
+
         updateTotalLabel();
     }
 
@@ -155,9 +172,11 @@ public class CartScene {
         if(cartEvent.type == CartEvent.Type.ADD) {
             CartEntry cartEntry = cartEvent.cartEntry;
             Article article = articles[cartEntry.articleIndex];
-            addArticleToCart(article, cartEntry.purchaseQuantity);
 
             cart.add(cartEntry);
+            addArticleToCart(article, cartEntry.purchaseQuantity);
+
+            updateItemLabel(cart.size() - 1);
             updateTotalLabel();
         } else if(cartEvent.type == CartEvent.Type.DELETE) {
             int cartEntryIndex =
@@ -167,13 +186,14 @@ public class CartScene {
             CartEntry cartEntry = cartEvent.cartEntry;
             int cartEntryIndex = getCartEntryIndex(cartEntry.articleIndex);
 
+            cart.get(cartEntryIndex).purchaseQuantity
+                = cartEntry.purchaseQuantity;
+
             Spinner spinner = purchaseQuantitySpinners.get(cartEntryIndex);
             Client.setSpinnerValue(spinner, cartEntry.purchaseQuantity,
                 spinnerEventHandler);
 
-            cart.get(cartEntryIndex).purchaseQuantity
-                = cartEntry.purchaseQuantity;
-
+            updateItemLabel(cartEntryIndex);
             updateTotalLabel();
         }
     }
@@ -205,6 +225,8 @@ public class CartScene {
             if(observable == purchaseQuantitySpinner.valueProperty()) {
                 CartEntry cartEntry = cart.get(i);
                 cartEntry.purchaseQuantity = newValue;
+
+                updateItemLabel(i);
                 updateTotalLabel();
 
                 changeRes.cartEvent
