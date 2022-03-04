@@ -137,6 +137,10 @@ public class CartScene {
             this.cart.add(cartEntry);
         }
 
+        purchaseQuantitySpinners.clear();
+        priceLabels.clear();
+        removeButtons.clear();
+
         for(int i = 0; i < cart.length; i++) {
             CartEntry cartEntry = cart[i];
             Article article = articles[cartEntry.articleIndex];
