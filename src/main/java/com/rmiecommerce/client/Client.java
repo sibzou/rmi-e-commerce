@@ -72,6 +72,8 @@ public class Client extends Application {
 
     private void onSuccessSceneClick(MouseEvent event) {
         if(successScene.onMouseClick(event)) {
+            shopScene.clearCart();
+            cartScene.clearCart();
             shopScene.show(scene);
         }
     }

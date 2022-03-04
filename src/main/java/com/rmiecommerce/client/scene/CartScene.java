@@ -182,6 +182,17 @@ public class CartScene {
         updateTotalLabel();
     }
 
+    public void clearCart() {
+        cartBox.getChildren().clear();
+        cart.clear();
+
+        purchaseQuantitySpinners.clear();
+        priceLabels.clear();
+        removeButtons.clear();
+
+        updateTotalLabel();
+    }
+
     public void onCartEvent(CartEvent cartEvent) {
         if(cartEvent.type == CartEvent.Type.ADD) {
             CartEntry cartEntry = cartEvent.cartEntry;

@@ -162,6 +162,18 @@ public class ShopScene {
         goodPaneChilds.add(addToCartButtons[articleIndex]);
     }
 
+    public void clearCart() {
+        List<Node> goodsPaneChilds = goodsPane.getChildren();
+
+        for(int i = 0; i < goodsPaneChilds.size(); i++) {
+            Pane goodPane = (Pane)goodsPaneChilds.get(i);
+            List<Node> goodPaneChilds = goodPane.getChildren();
+
+            goodPaneChilds.remove(2);
+            goodPaneChilds.add(addToCartButtons[i]);
+        }
+    }
+
     public void onCartEvent(CartEvent cartEvent) {
         if(cartEvent.type == CartEvent.Type.DELETE) {
             removeFromCart(cartEvent.cartEntry.articleIndex);

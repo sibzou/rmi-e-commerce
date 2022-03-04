@@ -89,6 +89,9 @@ public class PaymentScene {
 
     public void show(Scene scene, double totalPrice) {
         priceLabel.setText("Total à payer : " + totalPrice + " €");
+        numTextField.clear();
+        cryptogramTextField.clear();
+
         scene.setRoot(mainBox);
     }
 }
