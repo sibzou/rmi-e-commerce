@@ -4,17 +4,16 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class ShopRemote extends UnicastRemoteObject implements IShopRemote {
-    public ShopRemote() throws RemoteException {
+    private Database database;
+
+    public ShopRemote(String dbPath) throws RemoteException {
         super();
+        database = new Database(dbPath);
     }
 
     @Override
     public RemoteArticle[] getArticles() {
-        return new RemoteArticle[] {
-            new RemoteArticle(1, "Chaussures", 22.87),
-            new RemoteArticle(2, "Poireau", 3.02),
-            new RemoteArticle(3, "Bouteille de lait", 1.50)
-        };
+        return database.getArticles();
     }
 
     @Override
