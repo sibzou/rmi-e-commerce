@@ -65,4 +65,56 @@ public class Database {
             return null;
         }
     }
+
+    private void addInCart(int remoteId, int quantity) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                "insert into cart values(?, ?)");
+
+            stmt.setInt(1, remoteId);
+            stmt.setInt(2, quantity);
+            stmt.execute();
+        } catch(SQLException ignored) {}
+    }
+
+    private void editCart(int remoteId, int quantity) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                "update cart set purchaseQuantity = ? where articleId = ?");
+
+            stmt.setInt(1, quantity);
+            stmt.setInt(2, remoteId);
+            stmt.execute();
+        } catch(SQLException ignored) {ignored.printStackTrace();}
+    }
+
+    private void deleteFromCart(int remoteId) {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                "delete from cart where articleId = ?");
+
+            stmt.setInt(1, remoteId);
+            stmt.execute();
+        } catch(SQLException ignored) {}
+    }
+
+    public void setArticlePurchaseQuantity(int remoteId, int quantity) {
+        if(quantity == 0) {
+            deleteFromCart(remoteId);
+        } else {
+            try {
+                PreparedStatement stmt = connection.prepareStatement(
+                    "select articleId from cart where articleId = ?");
+
+                stmt.setInt(1, remoteId);
+                ResultSet rs = stmt.executeQuery();
+
+                if(rs.next()) {
+                    editCart(remoteId, quantity);
+                } else {
+                    addInCart(remoteId, quantity);
+                }
+            } catch(SQLException ignored) {}
+        }
+    }
 }

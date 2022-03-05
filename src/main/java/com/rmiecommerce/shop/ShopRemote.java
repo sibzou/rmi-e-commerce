@@ -23,6 +23,7 @@ public class ShopRemote extends UnicastRemoteObject implements IShopRemote {
 
     @Override
     public void setArticlePurchaseQuantity(int remoteId, int quantity) {
+        database.setArticlePurchaseQuantity(remoteId, quantity);
     }
 
     @Override
