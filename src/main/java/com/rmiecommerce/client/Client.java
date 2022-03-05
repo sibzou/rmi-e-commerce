@@ -7,6 +7,8 @@ import com.rmiecommerce.client.scene.SuccessScene;
 import com.rmiecommerce.common.Article;
 import com.rmiecommerce.common.CartEntry;
 import com.rmiecommerce.shop.IShopRemote;
+import com.rmiecommerce.shop.RemoteArticle;
+import com.rmiecommerce.shop.RemoteCartEntry;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -105,8 +107,21 @@ public class Client extends Application {
             | RemoteException ignored) {}
 
         try {
-            Article[] articles = shopRemote.getArticles();
-            CartEntry[] cart = shopRemote.getCart();
+            RemoteArticle[] remoteArticles = shopRemote.getArticles();
+            Article[] articles = new Article[remoteArticles.length];
+
+            for(int i = 0; i < articles.length; i++) {
+                RemoteArticle remoteArticle = remoteArticles[i];
+                articles[i] = new Article(remoteArticle.name,
+                    remoteArticle.price);
+            }
+
+            RemoteCartEntry[] remoteCart = shopRemote.getCart();
+            CartEntry[] cart = new CartEntry[remoteCart.length];
+
+            for(int i = 0; i < cart.length; i++) {
+                cart[i] = remoteCart[i].getCartEntry(remoteArticles);
+            }
 
             shopScene.addArticles(articles, cart);
             cartScene.fillCart(articles, cart);

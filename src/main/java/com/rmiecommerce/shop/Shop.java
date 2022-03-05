@@ -6,7 +6,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 
 public class Shop {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException,
+            MalformedURLException{
+
         if(args.length == 0) {
             System.err.println("You have to provide a listen port number");
             System.exit(1);
@@ -19,6 +21,6 @@ public class Shop {
         } catch(NumberFormatException exception) {
             System.err.println("Incorrect port number");
             System.exit(1);
-        } catch(RemoteException | MalformedURLException ignored) {}
+        }
     }
 }

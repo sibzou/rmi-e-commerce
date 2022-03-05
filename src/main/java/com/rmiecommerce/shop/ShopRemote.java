@@ -1,8 +1,5 @@
 package com.rmiecommerce.shop;
 
-import com.rmiecommerce.common.Article;
-import com.rmiecommerce.common.CartEntry;
-
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -12,19 +9,19 @@ public class ShopRemote extends UnicastRemoteObject implements IShopRemote {
     }
 
     @Override
-    public Article[] getArticles() {
-        return new Article[] {
-            new Article("Chaussures", 22.87),
-            new Article("Poireau", 3.02),
-            new Article("Bouteille de lait", 1.50)
+    public RemoteArticle[] getArticles() {
+        return new RemoteArticle[] {
+            new RemoteArticle(1, "Chaussures", 22.87),
+            new RemoteArticle(2, "Poireau", 3.02),
+            new RemoteArticle(3, "Bouteille de lait", 1.50)
         };
     }
 
     @Override
-    public CartEntry[] getCart() {
-        return new CartEntry[] {
-            new CartEntry(2, 3),
-            new CartEntry(1, 2)
+    public RemoteCartEntry[] getCart() {
+        return new RemoteCartEntry[] {
+            new RemoteCartEntry(3, 3),
+            new RemoteCartEntry(2, 2)
         };
     }
 
