@@ -40,4 +40,29 @@ public class Database {
             return null;
         }
     }
+
+    public RemoteCartEntry[] getCart() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                "select * from cart");
+
+            ResultSet rs = stmt.executeQuery();
+            ArrayList<RemoteCartEntry> remoteCart = new ArrayList<>();
+
+            while(rs.next()) {
+                int remoteArticleId = rs.getInt(1);
+                int purchaseQuantity = rs.getInt(2);
+
+                remoteCart.add(new RemoteCartEntry(remoteArticleId,
+                    purchaseQuantity));
+            }
+
+            RemoteCartEntry[] res = new RemoteCartEntry[remoteCart.size()];
+            for(int i = 0; i < res.length; i++) res[i] = remoteCart.get(i);
+
+            return res;
+        } catch(SQLException exception) {
+            return null;
+        }
+    }
 }

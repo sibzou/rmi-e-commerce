@@ -18,10 +18,7 @@ public class ShopRemote extends UnicastRemoteObject implements IShopRemote {
 
     @Override
     public RemoteCartEntry[] getCart() {
-        return new RemoteCartEntry[] {
-            new RemoteCartEntry(3, 3),
-            new RemoteCartEntry(2, 2)
-        };
+        return database.getCart();
     }
 
     @Override
