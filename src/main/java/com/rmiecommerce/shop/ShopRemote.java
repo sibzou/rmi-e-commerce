@@ -26,6 +26,10 @@ public class ShopRemote extends UnicastRemoteObject implements IShopRemote {
     }
 
     @Override
+    public void setArticlePurchaseQuantity(int remoteId, int quantity) {
+    }
+
+    @Override
     public boolean pay(String creditCartNumber, String creditCardCryptogram) {
         return creditCartNumber.equals("123")
             && creditCardCryptogram.equals("321");

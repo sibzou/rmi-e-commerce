@@ -27,6 +27,7 @@ import javafx.stage.Stage;
 public class Client extends Application {
     private Scene scene;
     private IShopRemote shopRemote;
+    private RemoteArticle[] remoteArticles;
 
     private ShopScene shopScene;
     private CartScene cartScene;
@@ -37,6 +38,23 @@ public class Client extends Application {
         public CartEvent cartEvent;
     }
 
+    private void handleCartEvent(CartEvent event) {
+        CartEntry cartEntry = event.cartEntry;
+        RemoteArticle remoteArticle = remoteArticles[cartEntry.articleIndex];
+        int articleRemoteId = remoteArticle.remoteId;
+
+        try {
+            if(event.type == CartEvent.Type.ADD) {
+                shopRemote.setArticlePurchaseQuantity(articleRemoteId, 1);
+            } else if(event.type == CartEvent.Type.DELETE) {
+                shopRemote.setArticlePurchaseQuantity(articleRemoteId, 0);
+            } else if(event.type == CartEvent.Type.CHANGE_QUANTITY) {
+                shopRemote.setArticlePurchaseQuantity(articleRemoteId,
+                    cartEntry.purchaseQuantity);
+            }
+        } catch(RemoteException ignored) {}
+    }
+
     private void onShopSceneClick(MouseEvent event) {
         ShopScene.ClickResult clickRes = new ShopScene.ClickResult();
         shopScene.onMouseClick(event, clickRes);
@@ -45,6 +63,7 @@ public class Client extends Application {
             cartScene.show(scene);
         } else if(clickRes.type == ShopScene.ClickResult.Type.CART_EVENT) {
             cartScene.onCartEvent(clickRes.cartEvent);
+            handleCartEvent(clickRes.cartEvent);
         }
     }
 
@@ -58,6 +77,7 @@ public class Client extends Application {
             paymentScene.show(scene, clickRes.totalPrice);
         } else if(clickRes.type == CartScene.ClickResult.Type.CART_EVENT) {
             shopScene.onCartEvent(clickRes.cartEvent);
+            handleCartEvent(clickRes.cartEvent);
         }
     }
 
@@ -107,7 +127,7 @@ public class Client extends Application {
             | RemoteException ignored) {}
 
         try {
-            RemoteArticle[] remoteArticles = shopRemote.getArticles();
+            remoteArticles = shopRemote.getArticles();
             Article[] articles = new Article[remoteArticles.length];
 
             for(int i = 0; i < articles.length; i++) {
@@ -139,6 +159,8 @@ public class Client extends Application {
         if(changeRes.cartEvent.type == CartEvent.Type.CHANGE_QUANTITY) {
             cartScene.onCartEvent(changeRes.cartEvent);
         }
+
+        handleCartEvent(changeRes.cartEvent);
     }
 
     private void onCartSceneSpinnerChange(
@@ -152,6 +174,8 @@ public class Client extends Application {
         if(changeRes.cartEvent.type == CartEvent.Type.CHANGE_QUANTITY) {
             shopScene.onCartEvent(changeRes.cartEvent);
         }
+
+        handleCartEvent(changeRes.cartEvent);
     }
 
     private void onSpinnerValueChange(
