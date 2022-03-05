@@ -31,6 +31,8 @@ import javafx.scene.text.Font;
 
 public class ShopScene {
     private final VBox mainBox;
+    private final String[] shopNames;
+    private final ComboBox<String> shopSelectorComboBox;
     private final FlowPane goodsPane;
     private final Button seeCartButton;
     private Button[] addToCartButtons;
@@ -58,12 +60,14 @@ public class ShopScene {
         this.spinnerEventHandler = spinnerEventHandler;
 
         Label shopSelectorLabel = new Label("Magasin");
-        ComboBox<String> shopSelectorComboBox = new ComboBox<String>();
+        shopSelectorComboBox = new ComboBox<String>();
         shopSelectorComboBox.setOnAction(comboBoxActionHandler);
 
-        shopSelectorComboBox.getItems().addAll("Brico3000",
-                                               "Biomarket",
-                                               "SportMax");
+        shopNames = new String[] {"Brico3000", "Biomarket", "SportMax"};
+
+        for(String shopName : shopNames) {
+            shopSelectorComboBox.getItems().add(shopName);
+        }
 
         HBox shopSelector = new HBox(shopSelectorLabel, shopSelectorComboBox);
         shopSelector.setAlignment(Pos.CENTER);
@@ -89,6 +93,18 @@ public class ShopScene {
         bottomBar.setAlignment(Pos.CENTER_RIGHT);
 
         mainBox = new VBox(shopSelector, goodsScrollPane, bottomBar);
+    }
+
+    public int getSelectedShopPort() {
+        String value = shopSelectorComboBox.getValue();
+
+        for(int i = 0; i < shopNames.length; i++) {
+            if(value.equals(shopNames[i])) {
+                return 3007 + i;
+            }
+        }
+
+        return -1;
     }
 
     private void addArticleInShop(Article article, int purchaseQuantity,

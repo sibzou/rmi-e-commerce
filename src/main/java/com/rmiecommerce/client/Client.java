@@ -96,8 +96,11 @@ public class Client extends Application {
     }
 
     private void onComboBoxAction(ActionEvent event) {
+        int port = shopScene.getSelectedShopPort();
+
         try {
-            shopRemote = (IShopRemote)Naming.lookup("rmi://localhost:3007/shop");
+            shopRemote = (IShopRemote)Naming.lookup("rmi://localhost:" + port
+                + "/shop");
         } catch(NotBoundException | MalformedURLException
             | RemoteException ignored) {}
 
