@@ -15,9 +15,11 @@ public class Shop {
         }
 
         try {
-            LocateRegistry.createRegistry(Integer.parseInt(args[0]));
+            int port = Integer.parseInt(args[0]);
+            LocateRegistry.createRegistry(port);
+
             ShopRemote shopRemote = new ShopRemote(args[1]);
-            Naming.rebind("rmi://localhost:3007/shop", shopRemote);
+            Naming.rebind("rmi://localhost:" + port + "/shop", shopRemote);
         } catch(NumberFormatException exception) {
             System.err.println("Incorrect port number");
             System.exit(1);
