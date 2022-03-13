@@ -10,16 +10,22 @@ public class Shop {
             MalformedURLException{
 
         if(args.length < 2) {
-            System.err.println("You have to provide in this order : a listen port number and a sqlite db path");
+            System.err.println("You have to provide in this order : " +
+                "a listen port number, " +
+                "a sqlite db path, " +
+                "the bank process ip address and " +
+                "the bank process listening port.");
             System.exit(1);
         }
 
         try {
-            int port = Integer.parseInt(args[0]);
-            LocateRegistry.createRegistry(port);
+            int shopPort = Integer.parseInt(args[0]);
+            int bankPort = Integer.parseInt(args[3]);
 
-            ShopRemote shopRemote = new ShopRemote(args[1]);
-            Naming.rebind("rmi://localhost:" + port + "/shop", shopRemote);
+            LocateRegistry.createRegistry(shopPort);
+
+            ShopRemote shopRemote = new ShopRemote(args[1], args[2], bankPort);
+            Naming.rebind("rmi://localhost:" + shopPort + "/shop", shopRemote);
         } catch(NumberFormatException exception) {
             System.err.println("Incorrect port number");
             System.exit(1);

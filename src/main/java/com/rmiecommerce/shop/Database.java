@@ -117,4 +117,28 @@ public class Database {
             } catch(SQLException ignored) {}
         }
     }
+
+    public float getCartTotalPrice() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                "select sum(price * purchaseQuantity) from item inner join " +
+                "cart on id = articleId");
+
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            return rs.getFloat(1);
+        } catch(SQLException exception) {
+            return 0;
+        }
+    }
+
+    public void clearCart() {
+        try {
+            PreparedStatement stmt = connection.prepareStatement(
+                "delete from cart");
+
+            stmt.execute();
+        } catch(SQLException exception) {exception.printStackTrace();}
+    }
 }
