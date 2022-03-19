@@ -3,9 +3,9 @@ rmi-e-commerce
 Kevin BOUDINA
 Martin JOSSIC
 
-Le projet est déjà précompilé. Les instructions de compilation sont si besoin disponibles à la fin de ce fichier.
+Le projet est déjà précompilé. Il a été testé avec Java 17 donc il est recommandé d'utiliser cette version pour l'exécuter. Les instructions de compilation sont si besoin disponibles à la fin de ce fichier.
 
-Toutes les commandes sont à exécuter depuis la racine du projet. Le processus banque doit être lancé le premier, ensuite les processus magasin et enfin le processus client.
+Toutes les commandes sont à exécuter depuis la racine du projet. Le processus banque doit être lancé le premier, ensuite les processus magasin et enfin le processus client. Les commandes ne fonctionnent pas dans PowerShell, elles doivent être saisies depuis l'invite de commande traditionnelle de Windows (cmd.exe).
 
 Exécuter le processus banque :
 java -cp bin;deps/sqlite-jdbc.jar com.rmiecommerce.bank.Bank 4003 db/bank.db
